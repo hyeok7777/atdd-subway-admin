@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DisplayName("지하철역 관련 기능")
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class StationAcceptanceTest {
+    private final String STATION_PATH = "/stations";
     @LocalServerPort
     int port;
 
@@ -39,7 +40,7 @@ public class StationAcceptanceTest {
     @Test
     void createStation() {
         // when
-        Map<String, String> params = getStringStringMap("강남역");
+        Map<String, String> params = getStringParam("강남역");
 
         ExtractableResponse<Response> response = createStation(params);
 
@@ -58,8 +59,6 @@ public class StationAcceptanceTest {
                 .extract().jsonPath().getList("name", String.class);
     }
 
-    private final String STATION_PATH = "/stations";
-
 
     /**
      * Given 지하철역을 생성하고
@@ -70,7 +69,7 @@ public class StationAcceptanceTest {
     @Test
     void createStationWithDuplicateName() {
         // given
-        Map<String, String> params = getStringStringMap("강남역");
+        Map<String, String> params = getStringParam("강남역");
 
         RestAssured.given().log().all()
                 .body(params).contentType(MediaType.APPLICATION_JSON_VALUE)
@@ -92,11 +91,11 @@ public class StationAcceptanceTest {
     @Test
     void getStations() {
         // given
-        Map<String, String> params = getStringStringMap("강남역");
+        Map<String, String> params = getStringParam("강남역");
 
         ExtractableResponse<Response> response = createStation(params);
 
-        Map<String, String> params2 = getStringStringMap("사가정역");
+        Map<String, String> params2 = getStringParam("사가정역");
 
         ExtractableResponse<Response> response2 = createStation(params2);
 
@@ -109,7 +108,7 @@ public class StationAcceptanceTest {
         assertThat(stationNames).containsAnyOf("강남역", "사가정역");
     }
 
-    private Map<String, String> getStringStringMap(String stationName) {
+    private Map<String, String> getStringParam(String stationName) {
         Map<String, String> params = new HashMap<>();
         params.put("name", stationName);
         return params;
@@ -125,7 +124,7 @@ public class StationAcceptanceTest {
     @Test
     void deleteStation() {
         // given
-        Map<String, String> params = getStringStringMap("강남역");
+        Map<String, String> params = getStringParam("강남역");
 
         ExtractableResponse<Response> response = createStation(params);
         assertThat(response.statusCode()).isEqualTo(HttpStatus.CREATED.value());
